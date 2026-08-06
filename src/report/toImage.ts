@@ -34,12 +34,12 @@ const COLORS: Record<Confidence, string> = {
   unavailable: '#8b96a7',
 };
 
-const BG = '#0b0e14';
-const CARD_BG = '#121722';
-const BORDER = '#1f2735';
-const TEXT = '#e6ebf5';
-const TEXT_DIM = '#98a3b8';
-const TEXT_FAINT = '#808d9f';
+const BG = '#07090d';
+const CARD_BG = '#0f131b';
+const BORDER = '#232a36';
+const TEXT = '#eef2f8';
+const TEXT_DIM = '#a6b0c2';
+const TEXT_FAINT = '#8b95a6';
 
 const SANS = 'system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif';
 const MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { detectors, runAll } from './detect/registry';
+import { PRIMARY_IDS, detectors, runAll } from './detect/registry';
 import type { DetectorResult, Lang, Text } from './detect/types';
 import { LangContext, UI, initialLang, persistLang, t } from './i18n';
 import { Nameplate, buildNameplate } from './components/Nameplate';
@@ -70,6 +70,14 @@ export default function App() {
     () => detectors.map((d) => byId.get(d.id)).filter((r): r is DetectorResult => Boolean(r)),
     [byId],
   );
+  const primary = useMemo(
+    () => detectors.filter((d) => (PRIMARY_IDS as readonly string[]).includes(d.id)),
+    [],
+  );
+  const rest = useMemo(
+    () => detectors.filter((d) => !(PRIMARY_IDS as readonly string[]).includes(d.id)),
+    [],
+  );
   const nameplate = useMemo(() => buildNameplate(ordered, lang).join(' · '), [ordered, lang]);
   const note = useMemo(() => browserNote(), []);
 
@@ -93,8 +101,15 @@ export default function App() {
 
         <Verdicts results={ordered} />
 
+        {/* 身份三卡固定占第一行，其余走瀑布流 */}
+        <div className="grid grid--primary">
+          {primary.map((d) => (
+            <MetricGroup key={d.id} detector={d} result={byId.get(d.id)} />
+          ))}
+        </div>
+
         <div className="grid">
-          {detectors.map((d) => (
+          {rest.map((d) => (
             <MetricGroup key={d.id} detector={d} result={byId.get(d.id)} />
           ))}
           <PermissionCard />

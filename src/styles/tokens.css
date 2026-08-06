@@ -1,33 +1,73 @@
 :root {
   color-scheme: dark;
 
-  /* 底色：深色仪表盘 */
-  --bg: #0b0e14;
-  --bg-raised: #121722;
-  --bg-sunken: #0d1119;
-  --border: #1f2735;
-  --border-strong: #2c3648;
+  /* ---------------------------------------------------------------- 表面
+     深色仪表盘。用四级中性表面拉开层次，不靠彩色区分区块。 */
+  --bg: #07090d;
+  --surface-1: #0f131b; /* 卡片 */
+  --surface-2: #141a25; /* 卡片内的抬升块 */
+  --sunken: #0a0d13; /* 图例、结论这类内嵌区 */
 
-  --text: #e6ebf5;
-  --text-dim: #98a3b8;
-  --text-faint: #808d9f;
+  /* 兼容旧名，逐步收敛到上面四个 */
+  --bg-raised: var(--surface-1);
+  --bg-sunken: var(--sunken);
 
-  /* 语义色：只用于表达精度，不得用于装饰 */
+  /* 发丝线用半透明白，叠在任何表面上都自然 */
+  --line: rgba(255, 255, 255, 0.07);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --line-inset: rgba(255, 255, 255, 0.05); /* 卡片顶沿的一道高光，制造"有厚度"的观感 */
+  --border: var(--line);
+  --border-strong: var(--line-strong);
+
+  /* ---------------------------------------------------------------- 文字
+     三级灰阶，最低一级在卡片上也保证 ≥ 4.5:1 */
+  --text: #eef2f8;
+  --text-dim: #a6b0c2;
+  --text-faint: #8b95a6;
+
+  /* ------------------------------------------------------------ 语义色
+     只用于表达精度，不得用于装饰。界面其余部分一律中性。 */
   --c-exact: #4ade80;
-  --c-exact-bg: rgba(74, 222, 128, 0.12);
+  --c-exact-bg: rgba(74, 222, 128, 0.1);
   --c-approx: #fbbf24;
-  --c-approx-bg: rgba(251, 191, 36, 0.12);
+  --c-approx-bg: rgba(251, 191, 36, 0.1);
   --c-unavailable: #8b96a7;
-  --c-unavailable-bg: rgba(100, 116, 139, 0.14);
+  --c-unavailable-bg: rgba(139, 150, 167, 0.12);
 
-  --accent: #4f9dff;
+  /* 功能色：只出现在焦点环与链接上，不做装饰 */
+  --accent: #5aa2ff;
 
-  --radius: 10px;
-  --radius-sm: 6px;
-  --gap: 16px;
+  /* -------------------------------------------------------------- 尺度 */
+  --r-sm: 5px;
+  --r-md: 9px;
+  --r-lg: 14px;
+  --radius: var(--r-md);
+  --radius-sm: var(--r-sm);
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 36px;
+  --s-7: 56px;
+  --gap: 18px;
+
+  /* 字号阶梯固定在这里，组件里不再写零散 px */
+  --t-micro: 10.5px;
+  --t-caption: 11.5px;
+  --t-small: 12.5px;
+  --t-body: 14px;
+  --t-lead: 15px;
+  --t-title: 16.5px;
+  --t-section: 19px;
+  --t-hero: clamp(19px, 3vw, 29px);
 
   --font-sans:
-    system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', sans-serif;
+    system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* 阴影极轻，只把卡片从底色上托起一点 */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -14px rgba(0, 0, 0, 0.65);
 }

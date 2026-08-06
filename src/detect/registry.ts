@@ -10,6 +10,13 @@ import { networkDetector } from './detectors/network';
 import { benchmarkDetector } from './detectors/benchmark';
 import { perfDetector } from './detectors/perf';
 
+/**
+ * 首屏那一行的三张卡：回答"这台机器是什么"。
+ * 其余分组走瀑布流，瀑布流按列排版会把靠前的卡片推到第二列去，
+ * 最该先看到的三项不能交给它。
+ */
+export const PRIMARY_IDS = ['system', 'cpu', 'gpu'] as const;
+
 /** 展示顺序即数组顺序；执行顺序无所谓，全部并行。 */
 export const detectors: Detector[] = [
   systemDetector,
