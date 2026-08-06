@@ -1,0 +1,70 @@
+name: CI & Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# 只保留最新一次部署，旧的排队任务直接取消
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: 类型检查与单测
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: tsc --strict
+        run: npx tsc -b
+
+      - name: Vitest
+        run: npm test
+
+      - name: 构建
+        run: npm run build
+
+      # 产物里不该出现任何网络 API —— 零外发是本项目的硬约束，让 CI 守住它
+      - name: 检查产物无网络调用
+        run: |
+          if grep -qE 'fetch\(|XMLHttpRequest|sendBeacon|new WebSocket|EventSource' dist/assets/*.js; then
+            echo "::error::构建产物中出现了网络 API 调用"
+            grep -oE '.{60}(fetch\(|XMLHttpRequest|sendBeacon|new WebSocket|EventSource).{40}' dist/assets/*.js
+            exit 1
+          fi
+          echo "产物中无 fetch / XHR / sendBeacon / WebSocket / EventSource"
+
+      - name: 上传 Pages 产物
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: 部署到 GitHub Pages
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
