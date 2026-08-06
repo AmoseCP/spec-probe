@@ -1,0 +1,33 @@
+:root {
+  color-scheme: dark;
+
+  /* 底色：深色仪表盘 */
+  --bg: #0b0e14;
+  --bg-raised: #121722;
+  --bg-sunken: #0d1119;
+  --border: #1f2735;
+  --border-strong: #2c3648;
+
+  --text: #e6ebf5;
+  --text-dim: #98a3b8;
+  --text-faint: #808d9f;
+
+  /* 语义色：只用于表达精度，不得用于装饰 */
+  --c-exact: #4ade80;
+  --c-exact-bg: rgba(74, 222, 128, 0.12);
+  --c-approx: #fbbf24;
+  --c-approx-bg: rgba(251, 191, 36, 0.12);
+  --c-unavailable: #8b96a7;
+  --c-unavailable-bg: rgba(100, 116, 139, 0.14);
+
+  --accent: #4f9dff;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --gap: 16px;
+
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
