@@ -97,8 +97,10 @@ export function formatBytes(bytes: number, digits = 1): string {
 /** 秒 → 时长。Infinity / NaN 返回 null，由调用方决定怎么显示。 */
 export function formatDuration(seconds: number): L10n | null {
   if (!Number.isFinite(seconds) || seconds <= 0) return null;
-  const h = Math.floor(seconds / 3600);
-  const m = Math.round((seconds % 3600) / 60);
+  // 先整体取整到分钟再拆分，否则 7170 秒会得到"1 小时 60 分钟"
+  const total = Math.round(seconds / 60);
+  const h = Math.floor(total / 60);
+  const m = total % 60;
   if (h > 0) {
     return m > 0
       ? { zh: `${h} 小时 ${m} 分钟`, en: `${h} h ${m} min` }

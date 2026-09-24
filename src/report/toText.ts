@@ -8,6 +8,9 @@ import { UI, t } from '../i18n';
  */
 export function toText(results: DetectorResult[], nameplate: string, lang: Lang = 'zh'): string {
   const lines: string[] = [];
+  // 中文用全角标点，英文用半角，别把"：""（）"带进英文报告
+  const colon = lang === 'zh' ? '：' : ': ';
+  const paren = (s: string) => (lang === 'zh' ? `（${s}）` : ` (${s})`);
 
   lines.push(t(UI.reportTitle, lang));
   lines.push('='.repeat(40));
@@ -17,12 +20,13 @@ export function toText(results: DetectorResult[], nameplate: string, lang: Lang 
   lines.push('');
 
   for (const r of results) {
-    lines.push(`## ${t(r.detector.title, lang)}（${r.detector.subtitle}）`);
+    lines.push(`## ${t(r.detector.title, lang)}${paren(r.detector.subtitle)}`);
     for (const m of r.metrics) {
       const tag = `[${t(CONFIDENCE_LABEL[m.confidence], lang)}]`;
       const value = t(m.value, lang) ?? '—';
-      lines.push(`- ${t(m.label, lang)}：${value} ${tag}`);
-      lines.push(`    ${t(UI.reportSource, lang)}${m.source}`);
+      lines.push(`- ${t(m.label, lang)}${colon}${value} ${tag}`);
+      // source 可能是双语占位对象（如 NO_API），必须经 t() 取文本
+      lines.push(`    ${t(UI.reportSource, lang)}${t(m.source, lang)}`);
       if (m.note) lines.push(`    ${t(UI.reportNote, lang)}${t(m.note, lang)}`);
     }
     lines.push('');
@@ -30,7 +34,7 @@ export function toText(results: DetectorResult[], nameplate: string, lang: Lang 
 
   lines.push(`## ${t(UI.unavailableTitle, lang)}`);
   for (const item of UNAVAILABLE_ITEMS) {
-    lines.push(`- ${t(item.label, lang)}：${t(item.reason, lang)}`);
+    lines.push(`- ${t(item.label, lang)}${colon}${t(item.reason, lang)}`);
   }
   lines.push('');
   lines.push(t(UI.reportFooter, lang));

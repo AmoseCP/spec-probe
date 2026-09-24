@@ -75,6 +75,7 @@ export function buildVerdicts(results: DetectorResult[]): Verdict[] {
     ['codec.h264.4k60', factsOf(metrics, 'codec.h264.4k60')],
   ];
   const hw4k = fourK.filter(([, f]) => f?.supported && f.powerEfficient && f.smooth);
+  const hwStutter4k = fourK.filter(([, f]) => f?.supported && f.powerEfficient && !f.smooth);
   const any4k = fourK.filter(([, f]) => f?.supported);
 
   if (hw4k.length > 0) {
@@ -85,6 +86,17 @@ export function buildVerdicts(results: DetectorResult[]): Verdict[] {
       text: {
         zh: `4K60 视频有硬件解码单元（${hw4k.length} 路编码可硬解），播放 4K 片源不需要靠 CPU 硬扛。`,
         en: `4K60 video has a hardware decode path (${hw4k.length} codec${hw4k.length > 1 ? 's' : ''}), so 4K playback does not lean on the CPU.`,
+      },
+    });
+  } else if (hwStutter4k.length > 0) {
+    // 有硬解但浏览器报"不流畅"：不能说成"没有硬解"
+    out.push({
+      id: 'verdict.4k',
+      tone: 'caution',
+      basis: hwStutter4k.map(([id]) => id),
+      text: {
+        zh: '4K60 有硬件解码，但浏览器判断播放可能不流畅，高码率 4K 片源可能掉帧，降到 4K30 或 1440p 会更稳。',
+        en: '4K60 has a hardware decode path, but the browser expects it may not play smoothly — high-bitrate 4K may drop frames; 4K30 or 1440p is safer.',
       },
     });
   } else if (any4k.length > 0) {

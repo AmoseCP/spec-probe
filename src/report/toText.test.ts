@@ -55,10 +55,33 @@ describe('toText', () => {
 
   it('英文报告整体走英文文案', () => {
     const text = toText(results, 'Windows 11', 'en');
-    expect(text).toContain('System memory：≥ 8 GB [Approximate]');
+    expect(text).toContain('System memory: ≥ 8 GB [Approximate]');
+    expect(text).toContain('## Memory & storage (navigator.deviceMemory)');
+    expect(text).not.toMatch(/[：（）]/);
     expect(text).toContain('Note: Capped at 8');
     expect(text).toContain('What cannot be read');
     expect(text).toContain('CPU model and clock speed');
     expect(text).not.toContain('读不到的部分');
+  });
+
+  it('双语占位来源（如 NO_API）按语言取文本，不输出 [object Object]', () => {
+    const withL10nSource: DetectorResult[] = [
+      {
+        ...results[0],
+        metrics: [
+          {
+            id: 'cpu.name',
+            group: 'cpu',
+            label: { zh: '处理器型号', en: 'CPU model' },
+            value: null,
+            confidence: 'unavailable',
+            source: { zh: '（无对应 Web API）', en: '(no such Web API)' },
+          },
+        ],
+      },
+    ];
+    expect(toText(withL10nSource, '', 'zh')).toContain('来源：（无对应 Web API）');
+    expect(toText(withL10nSource, '', 'en')).toContain('Source: (no such Web API)');
+    expect(toText(withL10nSource, '', 'en')).not.toContain('[object Object]');
   });
 });

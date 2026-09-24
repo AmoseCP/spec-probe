@@ -23,7 +23,13 @@ export function initialLang(): Lang {
     /* 隐私模式下 localStorage 可能抛错，忽略 */
   }
   try {
-    return (navigator.languages ?? []).some((l) => l.toLowerCase().startsWith('zh')) ? 'zh' : 'en';
+    // 按偏好顺序取第一个本页支持的语言：["en-US", "zh-CN"] 的用户首选英文，不能因为列表里有 zh 就给中文
+    for (const l of navigator.languages ?? []) {
+      const lower = l.toLowerCase();
+      if (lower.startsWith('zh')) return 'zh';
+      if (lower.startsWith('en')) return 'en';
+    }
+    return 'en';
   } catch {
     return 'zh';
   }

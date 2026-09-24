@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { DetectorResult, Lang } from '../detect/types';
+import type { DetectorResult, L10n, Lang } from '../detect/types';
 import { toText } from '../report/toText';
 import { downloadJson, toJson } from '../report/toJson';
 import { downloadPng, renderReportCanvas } from '../report/toImage';
@@ -20,13 +20,14 @@ function filename(lang: Lang, ext: 'json' | 'png'): string {
 
 export function Actions({ results, nameplate, busy, onRerun, onToggleLang }: Props) {
   const lang = useLang();
-  const [status, setStatus] = useState('');
+  // 存双语文案而不是某一语言的字符串：切换语言后状态提示跟着切
+  const [status, setStatus] = useState<L10n | null>(null);
 
   const copy = useCallback(async () => {
     const text = toText(results, nameplate, lang);
     try {
       await navigator.clipboard.writeText(text);
-      setStatus(t(UI.copied, lang));
+      setStatus(UI.copied);
     } catch {
       // 剪贴板被拒时退回选中文本，用户仍可手动复制
       const ta = document.createElement('textarea');
@@ -38,23 +39,23 @@ export function Actions({ results, nameplate, busy, onRerun, onToggleLang }: Pro
       ta.select();
       const ok = document.execCommand?.('copy');
       document.body.removeChild(ta);
-      setStatus(t(ok ? UI.copied : UI.copyFailed, lang));
+      setStatus(ok ? UI.copied : UI.copyFailed);
     }
   }, [results, nameplate, lang]);
 
   const exportJson = useCallback(() => {
     downloadJson(filename(lang, 'json'), toJson(results, nameplate, lang));
-    setStatus(t(UI.exported, lang));
+    setStatus(UI.exported);
   }, [results, nameplate, lang]);
 
   const exportPng = useCallback(async () => {
     const canvas = renderReportCanvas(results, nameplate, lang);
     if (!canvas) {
-      setStatus(t(UI.exportPngFailed, lang));
+      setStatus(UI.exportPngFailed);
       return;
     }
-    await downloadPng(canvas, filename(lang, 'png'));
-    setStatus(t(UI.exportedPng, lang));
+    const ok = await downloadPng(canvas, filename(lang, 'png'));
+    setStatus(ok ? UI.exportedPng : UI.exportPngFailed);
   }, [results, nameplate, lang]);
 
   return (
@@ -90,7 +91,7 @@ export function Actions({ results, nameplate, busy, onRerun, onToggleLang }: Pro
         type="button"
         className="btn"
         onClick={() => {
-          setStatus('');
+          setStatus(null);
           onRerun();
         }}
         disabled={busy}
@@ -108,7 +109,7 @@ export function Actions({ results, nameplate, busy, onRerun, onToggleLang }: Pro
         {t(UI.langToggle, lang)}
       </button>
       <span className="actions__status" role="status">
-        {status}
+        {status && t(status, lang)}
       </span>
     </div>
   );

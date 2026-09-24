@@ -36,6 +36,13 @@ describe('initialLang', () => {
     expect(initialLang()).toBe('zh');
   });
 
+  it('按偏好顺序取首个支持的语言，列表靠后的 zh 不抢先', () => {
+    vi.stubGlobal('navigator', { languages: ['en-US', 'en', 'zh-CN'] });
+    expect(initialLang()).toBe('en');
+    vi.stubGlobal('navigator', { languages: ['ja-JP', 'zh-TW', 'en-US'] });
+    expect(initialLang()).toBe('zh');
+  });
+
   it('localStorage 抛错时不崩', () => {
     vi.stubGlobal('localStorage', {
       getItem() {

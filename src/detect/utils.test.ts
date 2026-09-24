@@ -78,6 +78,11 @@ describe('formatDuration', () => {
     expect(formatDuration(5400)).toEqual({ zh: '1 小时 30 分钟', en: '1 h 30 min' });
     expect(formatDuration(120)).toEqual({ zh: '2 分钟', en: '2 min' });
   });
+
+  it('分钟四舍五入到 60 时进位到小时，不出现"60 分钟"', () => {
+    expect(formatDuration(7170)).toEqual({ zh: '2 小时', en: '2 h' });
+    expect(formatDuration(3590)).toEqual({ zh: '1 小时', en: '1 h' });
+  });
 });
 
 describe('prettyGpuName', () => {

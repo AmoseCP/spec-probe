@@ -248,11 +248,12 @@ export function renderReportCanvas(
   return canvas;
 }
 
-export function downloadPng(canvas: HTMLCanvasElement, filename: string): Promise<void> {
+/** 返回是否真的触发了下载：toBlob 可能给 null（画布过大或被污染），调用方据此提示失败。 */
+export function downloadPng(canvas: HTMLCanvasElement, filename: string): Promise<boolean> {
   return new Promise((resolve) => {
     canvas.toBlob((blob) => {
       if (!blob) {
-        resolve();
+        resolve(false);
         return;
       }
       const url = URL.createObjectURL(blob);
@@ -263,7 +264,7 @@ export function downloadPng(canvas: HTMLCanvasElement, filename: string): Promis
       a.click();
       a.remove();
       setTimeout(() => URL.revokeObjectURL(url), 0);
-      resolve();
+      resolve(true);
     }, 'image/png');
   });
 }

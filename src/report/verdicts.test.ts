@@ -53,6 +53,16 @@ describe('buildVerdicts', () => {
     expect(sw.tone).toBe('caution');
   });
 
+  it('有硬解但不流畅时，不能说成"没有硬解"', () => {
+    const v = buildVerdicts(
+      wrap([codec('codec.hevc.4k60', { powerEfficient: true, smooth: false })]),
+    ).find((x) => x.id === 'verdict.4k')!;
+    expect(v.tone).toBe('caution');
+    expect(v.text.zh).toContain('有硬件解码');
+    expect(v.text.zh).not.toContain('没有硬解');
+    expect(v.basis).toEqual(['codec.hevc.4k60']);
+  });
+
   it('数据缺失时不给结论，绝不猜', () => {
     expect(buildVerdicts(wrap([]))).toEqual([]);
     expect(buildVerdicts([])).toEqual([]);
